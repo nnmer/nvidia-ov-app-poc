@@ -1,0 +1,117 @@
+[package]
+title = "Omniverse Viewer"
+
+version = "1.0.0"
+
+description = """
+"""
+keywords = ["app"]
+
+[dependencies]
+#"omni.kit.uiapp" = {}
+"omni.kit.window.extensions" = {}
+"omni.kit.window.preferences" = {}
+"omni.kit.window.stage" = {}
+"omni.kit.menu.file" = {}
+"omni.services.streamclient.websocket" = {}
+"omni.kit.widget.layers" = {}
+
+# for test/dev
+"omni.kit.window.console" = {}
+"omni.kit.window.commands" = {}
+
+# Viewport + RTX extensions
+"omni.kit.viewport.bundle" = {}
+"omni.hydra.rtx" = {}
+# show when the RTX engine finished loading
+"omni.kit.viewport.ready" = {}
+#"omni.kit.viewport.legacy_gizmos" = {}
+
+# if you want to expose the RTX render settings window
+# but you can disable that and control it all in code if you don't want the user to see/change that
+#"omni.rtx.settings.core" = {}
+
+# show the preferences window, can be disabled but would limit customization
+#"omni.kit.window.preferences" = { order = 1000 } # so the menu is in the correct place
+
+# Compatibility Checker
+"omni.kit.compatibility_checker" = {}
+
+# RTX render setings window
+#"omni.rtx.settings.core" = {}
+
+# show when the RTX engine has finished loading
+#"omni.kit.viewport.ready" = {}
+
+"msft.dotenv" = { order = -1000 }
+"msft.ext.adt" = {}
+"msft.khi.ext.pcr-animation" = {}
+
+# This is your application setup Extension
+# where you layout the various Windows, arrange your menu, etc.
+# order = 1000 makes it run last
+"msft.khi.viewer.setup" = { order = 1000 }
+
+[settings]
+renderer.enabled = "rtx"
+# force new viewport name
+exts."omni.kit.viewport.window".startup.windowName = "Viewport"
+
+# default viewport resolutions settings
+# these drive the resolution of the renderer
+renderer.resolution.width = 3840
+renderer.resolution.height = 2160
+
+# deprecate support for old kit.ui.menu
+# (support legacy_mode will probably be removed for Kit 104)
+app.menu.legacy_mode = false
+
+# this is used in our setup file to display the Version to the user in the title bar
+app.titleVersion = "1.0"
+
+# this will create a stage during the startup process
+# you don't have to, but be aware the the RTX engine only starts
+# when there is something to render, so use if false you might want or adjust the use of
+# omni.kit.viewport.ready
+app.content.emptyStageOnStart = true
+
+# if you use other hydra delegate like Iray or pxr you can add them here like so
+# renderer.enabled = "rtx,iray,pxr" # (that is what Omniverse Code does for example)
+
+# By default rtx is setup to be mgpu but in some context you might want to run on
+# a single gpu if so set this setting to false
+renderer.multiGpu.enabled = true
+
+# Skip long full shutdown and exit quickly
+app.fastShutdown = true
+
+[settings.app.window]
+title = "Omniverse Viewer"
+
+# Width and Height of your Main Window at startup
+width = 1600
+height = 1200
+
+[settings.app.layout]
+name = "basic"
+
+# Register extension folders from this repo in kit
+# These are the paths where Kit looks for extensions
+# Your application is using Extensions from your application
+# Here they are setup into a single folder "exts" but you can have you own structure if you need
+# see we also add the Extension from the Base application using their extscache
+[settings.app.exts]
+folders.'++' = ["${app}/../exts", "${app}/../extscache/", "${app}/../baseapp/exts", "${app}/../baseapp/extscache", "${app}/../baseapp/apps"]
+
+# Extension registry is not yet enabled for public apps
+[settings.app.extensions]
+registryEnabled = false
+
+# these will be for showing how to write tests for your application.
+# And yes you absolutely should
+[[test]]
+args = [
+	"--/app/window/width=480",
+    "--/app/window/height=480",
+    "--/app/extensions/registryEnabled=0", # Make sure we can run without registry and everything is precached
+]
