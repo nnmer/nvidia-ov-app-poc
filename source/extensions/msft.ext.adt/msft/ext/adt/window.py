@@ -341,11 +341,21 @@ class MsftAdtWindow(ui.Window):
         # prim = stage.GetPrimAtPath(self._map_dt_id2mesh_id[key])
         ctx = omni.usd.get_context()
         paths = []
+        payload_adt_list_selected = {}
         for key in selected_keys:
-            paths.append(self._map_dt_id2mesh_id[repr(key)])
+            k = repr(key)
+            paths.append(self._map_dt_id2mesh_id[k])
+            payload_adt_list_selected[k] = {
+                "mesh_id": self._map_dt_id2mesh_id[k],
+                "twin_data": self._twins_dict[k]
+            }
+
+        # print(f"selected twin push message {type(payload_adt_list_selected)}: {str(payload_adt_list_selected)}")
 
         if len(paths) > 0:
             ctx.get_selection().set_selected_prim_paths(paths, True)
+
+        Messenger().push(event_type=Messenger().EVENT_ADT_LIST_ITEM_SELECTED, payload=payload_adt_list_selected)
 
     # def is_twin_changed(self, val1: dict, val2: dict):
     #     import copy
