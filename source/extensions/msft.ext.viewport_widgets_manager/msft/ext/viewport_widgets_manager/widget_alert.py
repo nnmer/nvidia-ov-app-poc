@@ -1,9 +1,9 @@
-from .widget_provider import WidgetProvider
 import omni.ui as ui
 from omni.ui import color as cl
+from .widget_provider import WidgetProvider
 
 
-class RobotAlertWidgetProvider(WidgetProvider):
+class AlertWidgetProvider(WidgetProvider):
     def build_widget(self, viewport_window):
 
         with ui.ZStack(height=10,width=200):
@@ -18,7 +18,7 @@ class RobotAlertWidgetProvider(WidgetProvider):
             )
             with ui.VStack(height=0, style={"margin":5}):
                 with ui.HStack( style={"margin":0}, direction=ui.Direction.RIGHT_TO_LEFT):
-                    ui.Button(text=' x ', width=0, height=0, clicked_fn=lambda *args: self._on_close()  )
+                    ui.Button(text=' x ', width=0, height=0, clicked_fn=lambda *args: self.close()  )
 
                 with ui.VStack(style={"margin":0}):
                     ui.Label("Error!!!", name="text", word_wrap=True)

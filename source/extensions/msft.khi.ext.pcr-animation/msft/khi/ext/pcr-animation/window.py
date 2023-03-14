@@ -1,16 +1,12 @@
 __all__ = ["MsftKhiAnimationWindow"]
 import omni.ui as ui
-import omni.usd
-from .alert_viewport_widget import *
 from omni.kit.viewport.utility import get_active_viewport_window
 
-import omni.kit.viewport_widgets_manager as ViewportWidgetManager
-from omni.kit.viewport_widgets_manager.manager import WidgetAlignment
-from .viewport_widget_robot_info import *
-from .viewport_widget_robot_alert import *
-from omni.kit.viewport_widgets_manager.manager import WidgetAlignment
-from .extension import *
+import msft.ext.viewport_widgets_manager as ViewportWidgetsManager
+from msft.ext.viewport_widgets_manager import WidgetAlignment, InfoWidgetProvider, AlertWidgetProvider
 from msft.ext.adt.messenger import Messenger
+
+from .alert_viewport_widget import *
 
 class MsftKhiAnimationWindow(ui.Window):
     """MsftKhiAnimationWindow"""
@@ -45,21 +41,17 @@ class MsftKhiAnimationWindow(ui.Window):
         for key in event.payload.get_keys():
             mesh_id = event.payload[key]['mesh_id']
             twin_data = event.payload[key]['twin_data']
-            infoWidget = RobotInfoWidgetProvider(twin_data)
-            widget_id = ViewportWidgetManager.add_widget(mesh_id, infoWidget, WidgetAlignment.CENTER)
-            # infoWidget.set_action(on_close=lambda *args: self.rm(widget_id))
+            infoWidget = InfoWidgetProvider(twin_data)
+            widget_id = ViewportWidgetsManager.add_widget(mesh_id, infoWidget, WidgetAlignment.CENTER)
             self._viewport_widget_window_list.append(widget_id)
-
-    def rm(self, wid):
-        ViewportWidgetManager.remove_widget(wid)
 
     def clean_WidgetWindow(self):
         for item in self._viewport_widget_window_list:
-            ViewportWidgetManager.remove_widget(item)
+            ViewportWidgetsManager.remove_widget(item)
 
     def create_alert_widget3(self):
-        alertWidget = RobotAlertWidgetProvider({'RS07N_for_ODP': {'twin_data': {'$dtId': 'RS07N_for_ODP', 'ang3j': 0, '$etag': 'W/"636763cc-e8a2-4144-8a35-b60161ac6e21"', 'Tags': 'Robot1', 'ID': 'RS07N_for_ODP', 'RobotStatus': 'TBD', 'ang1j': 0, 'ang2j': 0, 'ang4j': 0, 'ang5j': 0, 'ang6j': 0, 'Temperature': 0, 'LastErrorMessage': '', 'UnitScenarioRobotStop': False, '$metadata': {'Tags': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ID': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, '$model': 'dtmi:KHI:PCR:RobotArm;1', 'ang2j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, '$lastUpdateTime': '2023-03-08T05:01:26.0229805Z', 'RobotStatus': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang1j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang3j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang4j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang5j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang6j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'Temperature': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'LastErrorMessage': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'UnitScenarioRobotStop': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}}}, 'mesh_id': '/World/khi_rs007n_vac_UNIT1'}})
-        widget_id = ViewportWidgetManager.add_widget('/World/khi_rs007n_vac_UNIT1', alertWidget, WidgetAlignment.TOP)
+        alertWidget = AlertWidgetProvider({'RS07N_for_ODP': {'twin_data': {'$dtId': 'RS07N_for_ODP', 'ang3j': 0, '$etag': 'W/"636763cc-e8a2-4144-8a35-b60161ac6e21"', 'Tags': 'Robot1', 'ID': 'RS07N_for_ODP', 'RobotStatus': 'TBD', 'ang1j': 0, 'ang2j': 0, 'ang4j': 0, 'ang5j': 0, 'ang6j': 0, 'Temperature': 0, 'LastErrorMessage': '', 'UnitScenarioRobotStop': False, '$metadata': {'Tags': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ID': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, '$model': 'dtmi:KHI:PCR:RobotArm;1', 'ang2j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, '$lastUpdateTime': '2023-03-08T05:01:26.0229805Z', 'RobotStatus': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang1j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang3j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang4j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang5j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'ang6j': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'Temperature': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'LastErrorMessage': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}, 'UnitScenarioRobotStop': {'lastUpdateTime': '2023-03-08T05:01:26.0229805Z'}}}, 'mesh_id': '/World/khi_rs007n_vac_UNIT1'}})
+        widget_id = ViewportWidgetsManager.add_widget('/World/khi_rs007n_vac_UNIT1', alertWidget, WidgetAlignment.TOP)
         self._viewport_widget_window_list.append(widget_id)
 
         # infoWidget = RobotInfoWidgetProvider()
