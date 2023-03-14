@@ -1,0 +1,29 @@
+[package]
+
+version = "1.0.0"
+title = "Viewport widgets manager"
+description = "Microsoft Viewport widgets manager"
+
+# Path (relative to the root) or content of readme markdown file for UI.
+readme  = "docs/README.md"
+
+# One of categories for UI.
+category = "window"
+
+# Keywords for the extension
+keywords = ["ext", "window"]
+
+# Icon to show in the extension manager
+icon = "data/icon.png"
+
+# Preview to show in the extension manager
+preview_image = "data/preview.png"
+
+# Use omni.ui to build simple UI
+[dependencies]
+"omni.ui" = {}
+"omni.kit.viewport_widgets_manager" = {}
+
+# Main python module this extension provides, it will be publicly available as "import omni.hello.world".
+[[python.module]]
+name = "msft.ext.viewport_widgets_manager"
