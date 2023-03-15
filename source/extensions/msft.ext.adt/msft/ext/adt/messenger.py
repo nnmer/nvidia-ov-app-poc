@@ -11,6 +11,7 @@ class Messenger:
     EVENT_ADT_MSG = None
     EVENT_SIGNALR_MSG = None
     EVENT_ADT_LIST_ITEM_SELECTED = None
+    EVENT_LOADING_COMPLETED = None
     bus = None
 
     def __new__(cls, *args, **kwargs):
@@ -20,6 +21,8 @@ class Messenger:
             cls.EVENT_ADT_MSG = carb.events.type_from_string("msft.ext.adt.event.msg-adt")
             cls.EVENT_SIGNALR_MSG = carb.events.type_from_string("msft.ext.adt.event.msg-signalr")
             cls.EVENT_ADT_LIST_ITEM_SELECTED = carb.events.type_from_string("msft.ext.adt.event.adt-list-item-selected")
+            cls.EVENT_LOADING_COMPLETED = carb.events.type_from_string("msft.ext.adt.event.loading-completed")
+            """ fires when all needed preparation are done, i.e. stage have been setup, layers, connections etc."""
         return cls.instance
 
     def __init__(self, **kwargs):

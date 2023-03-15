@@ -193,7 +193,7 @@ class MsftAdtWindow(ui.Window):
         #     print(f"Update: {e.payload['dt']}")
         usd_ctx = omni.usd.get_context()
 
-        def setup_layers(a, b):
+        def setup_layers():
             new_layer_id = 'origin'     # uuid.uuid4()
             stage = usd_ctx.get_stage()
             omni.kit.commands.execute("CreateSublayer",
@@ -207,7 +207,7 @@ class MsftAdtWindow(ui.Window):
                 create_or_insert=True
             )
 
-            new_layer_id = 'msft.khi.pcr.adt.animation-overlay'  #uuid.uuid4()
+            new_layer_id = 'msft.adt.workspace-overlay'  #uuid.uuid4()
             omni.kit.commands.execute("CreateSublayer",
                 layer_identifier=stage.GetRootLayer().identifier,
                 # This example prepends to the subLayers list
@@ -223,11 +223,15 @@ class MsftAdtWindow(ui.Window):
                 layer_identifier=f"{os.environ['TEMP']}{os.sep}{new_layer_id}.usd",
             )
 
+        def finish_setup(arg1, arg2):
+            setup_layers()
+            Messenger().push(Messenger().EVENT_LOADING_COMPLETED)
+
         stage2load = os.environ["OV_DEFAULT_STAGE_LOAD"]
         if stage2load and len(stage2load) > 0 and (os.path.exists(stage2load) or stage2load.startswith('omniverse:')):
             usd_ctx.open_stage_with_callback(
                 stage2load,
-                on_finish_fn=setup_layers
+                on_finish_fn=finish_setup
             )
 
         # sub = update_stream.create_subscription_to_pop(on_update, name="My Subscription Name")
