@@ -13,6 +13,7 @@ from .style import *
 from .adt_list import *
 from .messenger import *
 from .robotmotion import RobotMotion
+from .mesh_materials import MeshMaterials
 
 from azure.digitaltwins.core import DigitalTwinsClient
 from azure.identity import ClientSecretCredential, DefaultAzureCredential
@@ -225,6 +226,7 @@ class MsftAdtWindow(ui.Window):
 
         def finish_setup(arg1, arg2):
             setup_layers()
+            MeshMaterials.setup_materials()
             Messenger().push(Messenger().EVENT_LOADING_COMPLETED)
 
         stage2load = os.environ["OV_DEFAULT_STAGE_LOAD"]

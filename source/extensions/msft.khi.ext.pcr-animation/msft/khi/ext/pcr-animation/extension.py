@@ -2,6 +2,7 @@ import os
 import omni.ext
 import omni.kit.ui
 import omni.usd
+import carb
 
 from .window import MsftKhiAnimationWindow
 from msft.ext.adt.messenger import Messenger
@@ -37,14 +38,17 @@ class WindowExtension(omni.ext.IExt):
             stage = context.get_stage()
             for prim_path in list(prim_paths):
                 if str(prim_path).startswith('/World'):
-                    prim = stage.GetPrimAtPath(str(prim_path))
+                    try:
+                        prim = stage.GetPrimAtPath(str(prim_path))
 
-                    if prim.IsInstance():
-                        prim.SetInstanceable(False)
+                        if prim.IsInstance():
+                            prim.SetInstanceable(False)
 
-                    children_refs = prim.GetChildren()
-                    if len(children_refs) > 0:
-                        self._on_stage_opened_reset_mesh_instances(e, (x.GetPrimPath() for x in children_refs))
+                        children_refs = prim.GetChildren()
+                        if len(children_refs) > 0:
+                            self._on_stage_opened_reset_mesh_instances(e, (x.GetPrimPath() for x in children_refs))
+                    except:
+                        carb.log_warn('Stage context is not ready yet. No /World')
 
 
     def process_twin_msg(self,event):
@@ -93,6 +97,7 @@ class WindowExtension(omni.ext.IExt):
             self._window = None
             self.adtTwinMsgSubscriberHandler = None
             self.robotSignalRMsgSubscriberHandler = None
+            self._stage_events_subscriber = None
         if self._menu is not None:
             editor_menu = omni.kit.ui.get_editor_menu()
             editor_menu.remove_item(self._menu)

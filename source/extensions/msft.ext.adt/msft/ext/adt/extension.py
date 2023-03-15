@@ -2,6 +2,7 @@ import omni.ext
 import omni.kit.ui
 
 from .window import MsftAdtWindow
+from .mesh_materials import MeshMaterials
 from .socket_messaging_window import SocketMessagingWindow
 
 class WindowExtension(omni.ext.IExt):
@@ -17,6 +18,8 @@ class WindowExtension(omni.ext.IExt):
         self._sockets_window = None
         self._menu = editor_menu.add_item(WindowExtension.MENU_PATH, self._on_menu_click, toggle=True, value=True)
         self.show_window(True)
+        self._mesh_materials = MeshMaterials()
+        self._mesh_materials.start()
 
     def _on_menu_click(self, menu, toggled):
         self.show_window(toggled)
