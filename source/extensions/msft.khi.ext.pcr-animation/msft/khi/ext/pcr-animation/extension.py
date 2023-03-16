@@ -1,6 +1,8 @@
 import os
 import omni.ext
 import omni.kit.ui
+import omni.usd
+import carb
 
 from .window import MsftKhiAnimationWindow
 from msft.ext.adt.messenger import Messenger
@@ -21,6 +23,32 @@ class WindowExtension(omni.ext.IExt):
 
         self.adtTwinMsgSubscriberHandler = Messenger().subscribe_deffered(Messenger().EVENT_ADT_MSG, self.process_twin_msg)
         self.robotSignalRMsgSubscriberHandler = Messenger().subscribe_deffered(Messenger().EVENT_SIGNALR_MSG, self.process_signalr_msg)
+        self._stage_events_subscriber =  omni.usd.get_context().get_stage_event_stream().create_subscription_to_pop(self._on_stage_opened_reset_mesh_instances)
+
+    def _on_stage_opened_reset_mesh_instances(self, e, prim_paths = (
+            '/World',
+            )):
+        """
+            Ensure all meshes on stage are not instances
+            This may be not a very efficient way (to go through all the meshes) but works for current KHI use case.
+            Optionally need to specify specific prim paths to iterate
+        """
+        if e.type == int(omni.usd.StageEventType.OPENED):
+            context = omni.usd.get_context()
+            stage = context.get_stage()
+            for prim_path in list(prim_paths):
+                if str(prim_path).startswith('/World'):
+                    try:
+                        prim = stage.GetPrimAtPath(str(prim_path))
+
+                        if prim.IsInstance():
+                            prim.SetInstanceable(False)
+
+                        children_refs = prim.GetChildren()
+                        if len(children_refs) > 0:
+                            self._on_stage_opened_reset_mesh_instances(e, (x.GetPrimPath() for x in children_refs))
+                    except:
+                        carb.log_warn('Stage context is not ready yet. No /World')
 
 
     def process_twin_msg(self,event):
@@ -69,6 +97,7 @@ class WindowExtension(omni.ext.IExt):
             self._window = None
             self.adtTwinMsgSubscriberHandler = None
             self.robotSignalRMsgSubscriberHandler = None
+            self._stage_events_subscriber = None
         if self._menu is not None:
             editor_menu = omni.kit.ui.get_editor_menu()
             editor_menu.remove_item(self._menu)
