@@ -1,5 +1,8 @@
 import omni.usd
 import carb
+from .gesture import KeyDown
+from .constants import Constants
+from .messenger import Messenger
 from pxr import Usd, Sdf, UsdShade
 
 
@@ -15,7 +18,7 @@ class MeshMaterials():
         return cls.instance
 
     def __init__(self) -> None:
-        pass
+        self._hightlighted_prims = []
 
     def start(self):
         # Track selection
@@ -35,21 +38,42 @@ class MeshMaterials():
             self._on_kit_selection_changed()
 
     def _on_kit_selection_changed(self):
-        context = omni.usd.get_context()
-        stage = context.get_stage()
+        alt_down = KeyDown().test(carb.input.KeyboardInput.LEFT_ALT, carb.input.KeyboardInput.RIGHT_ALT)
+        old_hightlighted_prims = self._hightlighted_prims.copy()
+        if alt_down:
+            context = self._get_context()
+            stage = context.get_stage()
 
-        prim_paths = self._get_context().get_selection().get_selected_prim_paths()
-        for prim_path in prim_paths:
-            carb.log_info(f"adt selected prim {prim_path}")
+            prim_paths = self._get_context().get_selection().get_selected_prim_paths()
+            for prim_path in prim_paths:
+                carb.log_info(f"adt selected prim {prim_path}")
 
-            prim = stage.GetPrimAtPath(prim_path)
-            mtl = UsdShade.Material.Get(stage, Sdf.Path(MaterialType.MATERIAL_SELECTED))
-            prim.GetPrim().ApplyAPI(UsdShade.MaterialBindingAPI)
-            UsdShade.MaterialBindingAPI(prim).Bind(mtl)
-            UsdShade.MaterialBindingAPI(prim).SetMaterialBindingStrength(prim.GetAuthoredProperties()[0], UsdShade.Tokens.strongerThanDescendants)
+                prim = stage.GetPrimAtPath(prim_path)
 
-            for key in prim.GetCustomData():
-                print(f' — {key} = {prim.GetCustomDataByKey(key)}')
+                material_prim = UsdShade.MaterialBindingAPI(prim).GetDirectBinding().GetMaterial().GetPrim()
+                if str(material_prim) != Constants.INVALID_NULL_PRIM \
+                    and material_prim.GetPath() == MaterialType.MATERIAL_SELECTED:
+
+                    UsdShade.MaterialBindingAPI(prim).UnbindDirectBinding()
+                    try:
+                        self._hightlighted_prims.remove(prim_path)
+                    except ValueError:
+                        pass
+                else:
+                    mtl = UsdShade.Material.Get(stage, Sdf.Path(MaterialType.MATERIAL_SELECTED))
+                    prim.GetPrim().ApplyAPI(UsdShade.MaterialBindingAPI)
+                    UsdShade.MaterialBindingAPI(prim).Bind(mtl)
+                    UsdShade.MaterialBindingAPI(prim).SetMaterialBindingStrength(prim.GetAuthoredProperties()[0], UsdShade.Tokens.strongerThanDescendants)
+                    self._hightlighted_prims.append(prim_path)
+
+        if set(old_hightlighted_prims).symmetric_difference(self._hightlighted_prims).length > 0:
+            Messenger().push(Messenger.EVENT_HIGHTLIGHTED_PRIMS_CHANGED, {
+                'old': old_hightlighted_prims,
+                'new': self._hightlighted_prims
+            })
+
+    def get_hightlighted_prims(self):
+        return self._hightlighted_prims
 
     @staticmethod
     def setup_materials():
@@ -58,7 +82,7 @@ class MeshMaterials():
 
         # Create Error Overlay Material
         prim = stage.GetPrimAtPath(Sdf.Path(MaterialType.MATERIAL_ERROR))
-        if str(prim) == 'invalid null prim':
+        if str(prim) == Constants.INVALID_NULL_PRIM:
             mtl_path = Sdf.Path(MaterialType.MATERIAL_ERROR)
             mtl = UsdShade.Material.Define(stage, mtl_path)
             shader = UsdShade.Shader.Define(stage, mtl_path.AppendPath("Shader"))
@@ -71,7 +95,7 @@ class MeshMaterials():
 
 
         prim = stage.GetPrimAtPath(Sdf.Path(MaterialType.MATERIAL_SELECTED))
-        if str(prim) == 'invalid null prim':
+        if str(prim) == Constants.INVALID_NULL_PRIM:
             # Create Selected part Overlay Material
             mtl_path = Sdf.Path(MaterialType.MATERIAL_SELECTED)
             mtl = UsdShade.Material.Define(stage, mtl_path)

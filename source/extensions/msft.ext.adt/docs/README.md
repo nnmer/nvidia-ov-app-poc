@@ -1,4 +1,7 @@
-# Nvidia Omniverse extension [msft.ext.adt]
+# Microsoft Azure Digital Twins [msft.ext.adt]
 
-Extension for Azure ADT.
-More info TBD.
+
+[Events](./events.md)
+
+
+To hightlight prim use `Alt+Click`
