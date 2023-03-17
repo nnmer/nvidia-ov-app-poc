@@ -6,6 +6,12 @@ import carb
 
 from .window import MsftKhiAnimationWindow
 from msft.ext.adt.messenger import Messenger
+from msft.ext.adt.window import MsftAdtWindow
+from msft.ext.adt.mesh_materials import MeshMaterials, MaterialType, Constants
+import msft.ext.viewport_widgets_manager as ViewportWidgetsManager
+from msft.ext.viewport_widgets_manager import WidgetAlignment, AlertWidgetProvider
+
+from pxr import Usd, UsdShade
 
 
 class WindowExtension(omni.ext.IExt):
@@ -44,7 +50,7 @@ class WindowExtension(omni.ext.IExt):
                         if prim.IsInstance():
                             prim.SetInstanceable(False)
 
-                        children_refs = prim.GetChildren()
+                        children_refs = prim.GetAllChildren()
                         if len(children_refs) > 0:
                             self._on_stage_opened_reset_mesh_instances(e, (x.GetPrimPath() for x in children_refs))
                     except:
@@ -52,13 +58,36 @@ class WindowExtension(omni.ext.IExt):
 
 
     def process_twin_msg(self,event):
-        if bool(os.environ['OV_DEBUG']):
-            print('EVENT_ADT_MSG is here do something with it')
-            print(str(event.type))
-            print(str(event.payload))
+        dtId = str(event.payload['$dtId'])
 
-        import datetime
-        self._window.label_msg_adt.text = f"{datetime.datetime.now().time()}::{str(event.payload['$dtId'])}::{str(event.payload['$metadata']['$lastUpdateTime'])}"
+        if dtId.startswith('RS07'):
+            selected_prim = str(event.payload['SelectedMesh']).replace('.','_')
+            has_error = bool(event.payload['UnitScenarioRobotStop'])
+            root_prim_path = MsftAdtWindow._map_dt_id2mesh_id.get(dtId)
+            if root_prim_path != None:
+                stage = omni.usd.get_context().get_stage()
+                prim = stage.GetPrimAtPath(str(root_prim_path))
+
+                range = Usd.PrimRange(prim)
+                for prim2 in range:
+                    # print (f"Traversing prim: {prim2.GetPath()}")
+                    if len(selected_prim)==0 or prim2.GetName() != selected_prim:
+                        material_prim = UsdShade.MaterialBindingAPI(prim2).GetDirectBinding().GetMaterial().GetPrim()
+                        if str(material_prim) != Constants.INVALID_NULL_PRIM \
+                            and material_prim.GetPath() == MaterialType.MATERIAL_SELECTED:
+
+                            MeshMaterials().clear_prim_highlight(prim2.GetPath())
+
+                for prim2 in range:
+                    if prim2.GetName() == selected_prim:
+                        target = prim2.GetChildren()
+                        if len(target)>0:
+                            MeshMaterials().highlight_prim(target[0].GetPath())
+
+                if has_error:
+                    alertWidget = AlertWidgetProvider({dtId: {'twin_data': event.payload}, 'mesh_id': root_prim_path})
+                    widget_id = ViewportWidgetsManager.add_widget(root_prim_path, alertWidget, WidgetAlignment.TOP)
+
         event.consume()
 
     def process_signalr_msg(self,event):

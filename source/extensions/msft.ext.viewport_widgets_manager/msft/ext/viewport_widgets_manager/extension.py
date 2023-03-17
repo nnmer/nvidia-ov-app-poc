@@ -56,7 +56,6 @@ def add_widget(prim_path: Union[str, Sdf.Path], widget: WidgetProvider, alignmen
         cannot be found.
     """
 
-    print("our def add_widget")
     instance = ViewportWidgetsManagerExtension._get_instance()
     if not instance:
         carb.log_warn("Extension msft.ext.viewport_widgets_manager is not enabled.")

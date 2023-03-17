@@ -12,13 +12,15 @@ class MaterialType():
     MATERIAL_SELECTED = '/World/Looks/SelectedOverlayMaterial'
 
 class MeshMaterials():
+    _hightlighted_prims = {}
+
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, 'instance'):
             cls.instance = super(MeshMaterials, cls).__new__(cls)
         return cls.instance
 
     def __init__(self) -> None:
-        self._hightlighted_prims = []
+        pass
 
     def start(self):
         # Track selection
@@ -37,43 +39,62 @@ class MeshMaterials():
         if event.type == int(omni.usd.StageEventType.SELECTION_CHANGED):
             self._on_kit_selection_changed()
 
+    def highlight_prim(self, prim_path: str):
+        context = self._get_context()
+        stage = context.get_stage()
+        mtl = UsdShade.Material.Get(stage, Sdf.Path(MaterialType.MATERIAL_SELECTED))
+        prim = stage.GetPrimAtPath(prim_path)
+        prim.ApplyAPI(UsdShade.MaterialBindingAPI)
+        UsdShade.MaterialBindingAPI(prim).Bind(mtl)
+        UsdShade.MaterialBindingAPI(prim).SetMaterialBindingStrength(prim.GetAuthoredProperties()[0], UsdShade.Tokens.strongerThanDescendants)
+        self._hightlighted_prims[prim_path]=''
+
+    def clear_prim_highlight(self, prim_path: str):
+        stage = self._get_context().get_stage()
+        prim = stage.GetPrimAtPath(prim_path)
+        try:
+            # print(f"clear prim :::::: {prim_path}")
+            UsdShade.MaterialBindingAPI(prim).UnbindDirectBinding()
+            if self._hightlighted_prims.get(prim_path):
+                del self._hightlighted_prims[prim_path]
+        except:
+            pass
+
+    def clear_all_highlight(self):
+        for prim_path in self.get_hightlighted_prims():
+            # carb.log_info(f"clearing prim highlight: {prim_path}")
+            self.clear_prim_highlight(prim_path)
+
+    def toggle_selection(self, prim_path: str):
+        context = self._get_context()
+        stage = context.get_stage()
+        prim = stage.GetPrimAtPath(prim_path)
+
+        material_prim = UsdShade.MaterialBindingAPI(prim).GetDirectBinding().GetMaterial().GetPrim()
+        if str(material_prim) != Constants.INVALID_NULL_PRIM \
+            and material_prim.GetPath() == MaterialType.MATERIAL_SELECTED:
+
+            self.clear_prim_highlight(prim_path)
+        else:
+            self.highlight_prim(prim_path)
+
     def _on_kit_selection_changed(self):
         alt_down = KeyDown().test(carb.input.KeyboardInput.LEFT_ALT, carb.input.KeyboardInput.RIGHT_ALT)
         old_hightlighted_prims = self._hightlighted_prims.copy()
         if alt_down:
-            context = self._get_context()
-            stage = context.get_stage()
-
             prim_paths = self._get_context().get_selection().get_selected_prim_paths()
             for prim_path in prim_paths:
-                carb.log_info(f"adt selected prim {prim_path}")
+                carb.log_info(f"stage selected prim {prim_path}")
+                self.toggle_selection(prim_path)
 
-                prim = stage.GetPrimAtPath(prim_path)
-
-                material_prim = UsdShade.MaterialBindingAPI(prim).GetDirectBinding().GetMaterial().GetPrim()
-                if str(material_prim) != Constants.INVALID_NULL_PRIM \
-                    and material_prim.GetPath() == MaterialType.MATERIAL_SELECTED:
-
-                    UsdShade.MaterialBindingAPI(prim).UnbindDirectBinding()
-                    try:
-                        self._hightlighted_prims.remove(prim_path)
-                    except ValueError:
-                        pass
-                else:
-                    mtl = UsdShade.Material.Get(stage, Sdf.Path(MaterialType.MATERIAL_SELECTED))
-                    prim.GetPrim().ApplyAPI(UsdShade.MaterialBindingAPI)
-                    UsdShade.MaterialBindingAPI(prim).Bind(mtl)
-                    UsdShade.MaterialBindingAPI(prim).SetMaterialBindingStrength(prim.GetAuthoredProperties()[0], UsdShade.Tokens.strongerThanDescendants)
-                    self._hightlighted_prims.append(prim_path)
-
-        if set(old_hightlighted_prims).symmetric_difference(self._hightlighted_prims).length > 0:
+        if len(set(old_hightlighted_prims.keys()).symmetric_difference(self._hightlighted_prims.keys())) > 0:
             Messenger().push(Messenger.EVENT_HIGHTLIGHTED_PRIMS_CHANGED, {
-                'old': old_hightlighted_prims,
-                'new': self._hightlighted_prims
+                'old': old_hightlighted_prims.keys(),
+                'new': self._hightlighted_prims.keys()
             })
 
     def get_hightlighted_prims(self):
-        return self._hightlighted_prims
+        return self._hightlighted_prims.keys()
 
     @staticmethod
     def setup_materials():

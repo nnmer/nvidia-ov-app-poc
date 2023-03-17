@@ -131,10 +131,15 @@ class MsftAdtWindow(ui.Window):
     _ui_connection_btn = None
 
     _map_dt_id2mesh_id = {
-        "RS07N_for_NAEP" : '/World/khi_rs007n_vac_UNIT4',
-        "RS07N_for_RPP" : '/World/khi_rs007n_vac_UNIT3',
-        "RS07N_for_PIP" : '/World/khi_rs007n_vac_UNIT2',
+        "RS07N_for_NAEP" : '/World/khi_rs007n_vac_UNIT2',
+        "RS07N_for_RPP" : '/World/khi_rs007n_vac_UNIT4',
+        "RS07N_for_PIP" : '/World/khi_rs007n_vac_UNIT3',
         "RS07N_for_ODP" : '/World/khi_rs007n_vac_UNIT1',
+
+        "RS07N_for_NAEP_Haneda" : '/World/khi_rs007n_vac_UNIT2',
+        "RS07N_for_RPP_Haneda" : '/World/khi_rs007n_vac_UNIT4',
+        "RS07N_for_PIP_Haneda" : '/World/khi_rs007n_vac_UNIT3',
+        "RS07N_for_ODP_Haneda" : '/World/khi_rs007n_vac_UNIT1',
         # 'Slider_for_PIP' : '',
         # 'Agitator_for_NAEP' : '',
         # 'Lid_Control_Device_for_PIP' : '',
@@ -185,6 +190,13 @@ class MsftAdtWindow(ui.Window):
 
                 # omni.kit.commands.execute('CreateMeshPrimWithDefaultXform',prim_type='Cube')
                 # omni.kit.commands.subscribe_on_change(self._event_triggered)
+
+        # usd_context = omni.usd.get_context()
+        # self._events = usd_context.get_stage_event_stream()
+        # self._stage_event_sub = self._events.create_subscription_to_pop(
+        #     self._on_stage_event, name="Object Info Selection Update"
+        # )
+        # omni.usd.StageEventType.SELECTION_CHANGED
 
     def _load_and_setup_stage(self):
 
@@ -386,13 +398,18 @@ class MsftAdtWindow(ui.Window):
             try:
                 #model = self._service_client().get_digital_twin(model_id)
                 #query_expression = 'SELECT * FROM digitaltwins dt WHERE STARTSWITH(dt.$metadata.$model,\'dtmi:PCR:PCR_Container_System\')'
-                query_expression = 'SELECT * FROM digitaltwins dt WHERE STARTSWITH(dt.$dtId,\'RS07N_\')'
+                site = os.environ["OV_AZURE_DIGITALTWINS_ROOT_NODE_ID"]
+                if bool(site) == False:
+                    carb.log_error('OV_AZURE_DIGITALTWINS_ROOT_NODE_ID environment variable should be set')
+                    return
+                query_expression = f"SELECT RobotArm FROM DIGITALTWINS MATCH (Site)-[]-()-[]-()-[]-()-[]-(RobotArm) WHERE Site.$dtId = '{site}' and STARTSWITH(RobotArm.$dtId,'RS07N_')"
                 query_result = self._service_client().query_twins(query_expression)
 
                 if self._twins_dict == None:
                     self._twins_dict = {}
 
                 for twin in query_result:
+                    twin = twin['RobotArm']
                     # cur_twin = self._twins_dict.get(twin['$dtId'], {})
                     self._twins_dict[twin['$dtId']] = twin
 
