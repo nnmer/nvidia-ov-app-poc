@@ -85,7 +85,7 @@ class WindowExtension(omni.ext.IExt):
                             MeshMaterials().highlight_prim(target[0].GetPath())
 
                 if has_error:
-                    alertWidget = AlertWidgetProvider({dtId: {'twin_data': event.payload}, 'mesh_id': root_prim_path})
+                    alertWidget = AlertWidgetProvider([event.payload['LastErrorMessage']])
                     widget_id = ViewportWidgetsManager.add_widget(root_prim_path, alertWidget, WidgetAlignment.TOP)
 
         event.consume()
