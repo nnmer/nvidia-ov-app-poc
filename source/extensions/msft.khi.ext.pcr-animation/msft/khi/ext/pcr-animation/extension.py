@@ -9,7 +9,7 @@ from msft.ext.adt.messenger import Messenger
 from msft.ext.adt.window import MsftAdtWindow
 from msft.ext.adt.mesh_materials import MeshMaterials, MaterialType, Constants
 import msft.ext.viewport_widgets_manager as ViewportWidgetsManager
-from msft.ext.viewport_widgets_manager import WidgetAlignment, AlertWidgetProvider
+from msft.ext.viewport_widgets_manager import WidgetAlignment, AlertWidgetProvider, WidgetProvider, WIDGET_NO_CLOSE
 
 from pxr import Usd, UsdShade
 
@@ -27,9 +27,19 @@ class WindowExtension(omni.ext.IExt):
         self._menu = editor_menu.add_item(WindowExtension.MENU_PATH, self._on_menu_click, toggle=True, value=True)
         self.show_window(True)
 
+        self._alert_per_prim_map = {} # primId => tuple (widget uuid, widget wrapper weak reference)
+
         self.adtTwinMsgSubscriberHandler = Messenger().subscribe_deffered(Messenger().EVENT_ADT_MSG, self.process_twin_msg)
         self.robotSignalRMsgSubscriberHandler = Messenger().subscribe_deffered(Messenger().EVENT_SIGNALR_MSG, self.process_signalr_msg)
         self._stage_events_subscriber =  omni.usd.get_context().get_stage_event_stream().create_subscription_to_pop(self._on_stage_opened_reset_mesh_instances)
+
+    #     self._subscr_on_close_event = omni.kit.app.get_app().get_message_bus_event_stream().create_subscription_to_pop_by_type(WidgetProvider().on_close_event_id, self.clear_alert_widget_reference)
+
+    # def clear_alert_widget_reference(self, event):
+    #     for prim_key in self._alert_per_prim_map.keys():
+    #         if str(self._alert_per_prim_map[prim_key][0]) ==  event.payload['ref']:
+    #             del self._alert_per_prim_map[prim_key]
+    #             break
 
     def _on_stage_opened_reset_mesh_instances(self, e, prim_paths = (
             '/World',
@@ -85,8 +95,17 @@ class WindowExtension(omni.ext.IExt):
                             MeshMaterials().highlight_prim(target[0].GetPath())
 
                 if has_error:
-                    alertWidget = AlertWidgetProvider([event.payload['LastErrorMessage']])
-                    widget_id = ViewportWidgetsManager.add_widget(root_prim_path, alertWidget, WidgetAlignment.TOP)
+                    if self._alert_per_prim_map.get(root_prim_path) == None:
+                        alertWidget = AlertWidgetProvider([event.payload['LastErrorMessage']], config=[WIDGET_NO_CLOSE])
+                        widget_id = ViewportWidgetsManager.add_widget(root_prim_path, alertWidget, WidgetAlignment.TOP)
+                        self._alert_per_prim_map[root_prim_path] = (alertWidget.get_id(), widget_id)
+                else:
+                    alert_set = self._alert_per_prim_map.get(root_prim_path)
+                    if alert_set:
+                        ViewportWidgetsManager.remove_widget(alert_set[1])
+                        del self._alert_per_prim_map[root_prim_path]
+
+
 
         event.consume()
 
