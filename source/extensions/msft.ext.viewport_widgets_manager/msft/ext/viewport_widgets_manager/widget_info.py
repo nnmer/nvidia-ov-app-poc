@@ -8,10 +8,7 @@ class InfoWidgetProvider(WidgetProvider):
     """
 
     _whitelisted_props = (
-        'ID',
-        'Tags',
-        'RobotStatus',
-        'Temperature'
+        # allowed list of properties
     )
 
     def _order_and_filter_data(self):

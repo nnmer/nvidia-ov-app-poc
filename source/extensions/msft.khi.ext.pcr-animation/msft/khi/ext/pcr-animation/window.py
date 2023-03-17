@@ -3,8 +3,9 @@ import omni.ui as ui
 from omni.kit.viewport.utility import get_active_viewport_window
 
 import msft.ext.viewport_widgets_manager as ViewportWidgetsManager
-from msft.ext.viewport_widgets_manager import WidgetAlignment, InfoWidgetProvider, AlertWidgetProvider
+from msft.ext.viewport_widgets_manager import WidgetAlignment, AlertWidgetProvider
 from msft.ext.adt.messenger import Messenger
+from msft.ext.adt.viewport_widget_twin_info import ViewportWidgetTwinInfo
 
 from .alert_viewport_widget import *
 
@@ -41,7 +42,7 @@ class MsftKhiAnimationWindow(ui.Window):
         for key in event.payload.get_keys():
             mesh_id = event.payload[key]['mesh_id']
             twin_data = event.payload[key]['twin_data']
-            infoWidget = InfoWidgetProvider(twin_data)
+            infoWidget = ViewportWidgetTwinInfo(twin_data)
             widget_id = ViewportWidgetsManager.add_widget(mesh_id, infoWidget, WidgetAlignment.CENTER)
             self._viewport_widget_window_list.append(widget_id)
 
