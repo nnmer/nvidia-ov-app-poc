@@ -1,4 +1,0 @@
-azure-digitaltwins-core==1.2.*
-azure-identity==1.12.*
-python-dotenv==0.21.*
-signalrcore==0.9.*
