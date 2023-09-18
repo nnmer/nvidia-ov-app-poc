@@ -1,0 +1,163 @@
+[
+  {
+    "children": [
+      {
+        "children": [
+          {
+            "dock_id": 1,
+            "dock_tab_bar_enabled": true,
+            "dock_tab_bar_visible": true,
+            "height": 971.0,
+            "position_x": 0.0,
+            "position_y": 24.0,
+            "selected_in_dock": true,
+            "title": "Viewport",
+            "visible": true,
+            "width": 1034.0
+          }
+        ],
+        "dock_id": 1,
+        "position": "LEFT"
+      },
+      {
+        "children": [
+          {
+            "dock_id": 2,
+            "height": 971.0,
+            "position_x": 1030.0,
+            "position_y": 24.0,
+            "selected_in_dock": false,
+            "title": "MsftAdtWindow",
+            "visible": true,
+            "width": 584.0
+          },
+          {
+            "dock_id": 2,
+            "height": 971.0,
+            "position_x": 1036.0,
+            "position_y": 24.0,
+            "selected_in_dock": false,
+            "title": "Layer",
+            "visible": true,
+            "width": 584.0
+          },
+          {
+            "dock_id": 2,
+            "dock_tab_bar_enabled": true,
+            "dock_tab_bar_visible": true,
+            "height": 971.0,
+            "position_x": 1036.0,
+            "position_y": 24.0,
+            "selected_in_dock": true,
+            "title": "Stage",
+            "visible": true,
+            "width": 584.0
+          }
+        ],
+        "dock_id": 2,
+        "position": "RIGHT"
+      }
+    ],
+    "dock_id": 3358485147
+  },
+  {
+    "dock_id": 0,
+    "height": 696.0,
+    "position_x": 0.0,
+    "position_y": 24.0,
+    "selected_in_dock": false,
+    "title": "Console",
+    "visible": true,
+    "width": 1280.0
+  },
+  {
+    "dock_id": 0,
+    "height": 450.0,
+    "position_x": 100.0,
+    "position_y": 135.0,
+    "selected_in_dock": false,
+    "title": "Open File",
+    "visible": true,
+    "width": 1080.0
+  },
+  {
+    "dock_id": 0,
+    "height": 82.0,
+    "position_x": 612.0,
+    "position_y": 622.0,
+    "selected_in_dock": false,
+    "title": "9f4c1e48-b212-11ed-b933-3800258da904",
+    "visible": true,
+    "width": 400.0
+  },
+  {
+    "dock_id": 0,
+    "height": 800.0,
+    "position_x": 160.0,
+    "position_y": 97.0,
+    "selected_in_dock": false,
+    "title": "Extensions",
+    "visible": false,
+    "width": 1300.0
+  },
+  {
+    "dock_id": 0,
+    "height": 600.0,
+    "position_x": 3.4028234663852886e+38,
+    "position_y": 3.4028234663852886e+38,
+    "selected_in_dock": false,
+    "title": "Preferences",
+    "visible": false,
+    "width": 1000.0
+  },
+  {
+    "dock_id": 0,
+    "height": 600.0,
+    "position_x": 3.4028234663852886e+38,
+    "position_y": 3.4028234663852886e+38,
+    "selected_in_dock": false,
+    "title": "Select Screenshot Directory",
+    "visible": false,
+    "width": 1000.0
+  },
+  {
+    "dock_id": 0,
+    "height": 60.0,
+    "position_x": 3.4028234663852886e+38,
+    "position_y": 3.4028234663852886e+38,
+    "selected_in_dock": false,
+    "title": "Changing directory ...",
+    "visible": false,
+    "width": 300.0
+  },
+  {
+    "dock_id": 0,
+    "height": 0.0,
+    "position_x": 3.4028234663852886e+38,
+    "position_y": 3.4028234663852886e+38,
+    "selected_in_dock": false,
+    "title": "Options",
+    "visible": false,
+    "width": 220.0
+  },
+  {
+    "dock_id": 0,
+    "height": 600.0,
+    "position_x": 3.4028234663852886e+38,
+    "position_y": 3.4028234663852886e+38,
+    "selected_in_dock": false,
+    "title": "Select Template",
+    "visible": false,
+    "width": 1000.0
+  },
+  {
+    "dock_id": 0,
+    "height": 600.0,
+    "position_x": 3.4028234663852886e+38,
+    "position_y": 3.4028234663852886e+38,
+    "selected_in_dock": false,
+    "title": "Select Filename (Local Files Only)",
+    "visible": false,
+    "width": 1000.0
+  }
+]

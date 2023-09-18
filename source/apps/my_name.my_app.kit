@@ -1,0 +1,112 @@
+[package]
+title = "ADT viewer demo"
+
+version = "1.0.0"
+
+description = """This Simple application shows you how to make an application"""
+
+# Keywords make  it browseable in UI using the "experience" filter
+keywords = ["app"]
+
+[dependencies]
+# Create Kit UI Based applications
+# Extensions window
+"omni.kit.window.extensions" = {}
+"omni.app.setup" = {}
+
+# Viewport Bundle
+"omni.kit.viewport.bundle" = {}
+#"omni.kit.viewport.rtx" = {}
+#"omni.kit.window.viewport" = {}
+#"omni.kit.viewport.pxr" = {}
+"omni.resourcemonitor" = {}
+
+# Render Settings 2.0
+"omni.rtx.settings.core" = {}
+
+"omni.hydra.rtx" = {}
+# Enable Pixar Storm for your viewport
+#"omni.hydra.pxr" = {}
+#"omni.hydra.pxr.settings" = {}
+
+
+# Vulkan shader caches
+"omni.rtx.shadercache.vulkan" = {}
+
+#### omni.hydra.pxr.settings brings next
+#### File Menu
+###"omni.kit.menu.file" = {}
+#### Stage
+###"omni.kit.window.stage" = {}
+#### Content Browser
+###"omni.kit.window.content_browser" = {}
+#### Edit Menu
+###"omni.kit.menu.edit" = {}
+#### ToolBar
+###"omni.kit.window.toolbar" = {}
+#### Property Window
+###"omni.kit.property.bundle" = {}
+#### Variant presenter
+###"omni.kit.variant.presenter" = {}
+#### USD Docs
+###"omni.kit.usd_docs" = {}
+#### USD Paths
+###"omni.kit.window.usd_paths" = {}
+#### USD Collection window
+###"omni.kit.window.collection" = {}
+
+"omni.kit.window.stage" = {}
+"omni.kit.widget.layers" = {}
+
+"msft.dotenv" = { order = -1000 }
+"msft.ext.viewport_widgets_manager" = {}
+"msft.ext.adt" = {}
+"msft.khi.ext.pcr-animation" = {}
+
+# order = 1000 makes it run last
+"msft.khi.viewer.setup" = { order = 1000 }
+
+#
+# Dev dependencies
+#
+"omni.kit.debug.settings" = {}
+"omni.kit.debug.vscode" = {}
+
+# DX shader caches (windows only)
+[dependencies."filter:platform"."windows-x86_64"]
+"omni.rtx.shadercache.d3d12" = {}
+
+[settings]
+# here you can choose what renderers are enabled
+renderer.enabled='rtx'
+renderer.active='rtx'
+
+[settings.app]
+fastShutdown = true
+
+content.emptyStageOnStart = true
+exts."omni.kit.viewport.window".startup.windowName = "Viewport"
+exts."omni.kit.renderer.core".compatibilityMode = true
+
+#layout.default = "${app}/default_layout.json"
+extensions.installUntrustedExtensions=true
+
+
+[settings.app.window]
+title="ADT viewer demo"
+
+# Register extension folders from this repo in kit
+# These are the paths where Kit looks for extensions
+# Your application is using Extensions from your application
+# Here they are setup into a single folder "source/extensions" but you can have you own structure if you need
+# see we also add the Extension from the Base application using their extscache
+[settings.app.exts]
+folders.'++' = ["${app}/../extensions"]
+
+# Public extension registries
+[settings.exts."omni.kit.registry.nucleus"]
+registries = [
+    { name = "kit/default", url = "https://ovextensionsprod.blob.core.windows.net/exts/kit/prod/shared" },
+    { name = "kit/sdk", url = "https://ovextensionsprod.blob.core.windows.net/exts/kit/prod/sdk/${kit_version_short}/${kit_git_hash}" },
+    { name = "kit/community", url = "https://dw290v42wisod.cloudfront.net/exts/kit/community"},
+    ]
