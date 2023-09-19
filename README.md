@@ -8,6 +8,9 @@ folder 'pip-packages' in a root repo folder - are custom python deps. from `./so
 3. run `bash ./source/apps/my_name.my_app.sh`
 
 
+`/source/.env` file will be created if it not exists. You need to put correct values for the variables.
+
+
 # Original Readme.md content below
 #
 #
