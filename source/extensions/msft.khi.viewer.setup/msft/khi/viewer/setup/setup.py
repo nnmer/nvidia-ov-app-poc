@@ -50,7 +50,7 @@ class SetupExtension(omni.ext.IExt):
             layout_file = custom_default_layout
         else:
             layouts_path = carb.tokens.get_tokens_interface().resolve("${msft.khi.viewer.setup}/layouts")
-            layout_file = Path(layouts_path).joinpath(f"{settings.get('/app/layout/name')}.json")
+            layout_file = Path(layouts_path).joinpath(f"{settings.get('/app/layout/default')}")
         asyncio.ensure_future(_load_layout(f"{layout_file}"))
 
         # using imgui directly to adjust some color and Variable
