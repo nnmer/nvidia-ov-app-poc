@@ -2,9 +2,8 @@
 # Initial setup
 
 1. clone the repo
-2. run `bash pull_kit_kernel.sh` which will setup kit kernel related symlinks and install custom pip dependencies
-
-folder 'pip-packages' in a root repo folder - are custom python deps. from `./source/requirements.txt` file
+2. run `bash pull_kit_kernel.sh` which will setup kit kernel related symlinks and install custom pip dependencies.
+Folder 'pip-packages' in a root repo folder - are custom python deps. from `./source/requirements.txt` file
 3. run `bash ./source/apps/my_name.my_app.sh`
 
 
